@@ -1,2 +1,0 @@
-# myblog
-Tutorial in Chinese:
