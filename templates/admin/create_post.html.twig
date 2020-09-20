@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block title %}Post a New Blog{% endblock %}
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.slug) }}
+        {{ form_row(form.body) }}
+        {{ form_row(form.category) }}
+
+        <button type="submit">Create</button>
+    {{ form_end(form) }}
+{% endblock %}

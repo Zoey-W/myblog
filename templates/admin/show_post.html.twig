@@ -1,0 +1,7 @@
+{% extends "base.html.twig" %}
+{% block title %}{{ blogPost.title }}{% endblock %}
+{% block body %}
+    <h2>{{ blogPost.title }}</h2>
+    <p>{{ blogPost.subtime|date('F j, Y') }}</p>
+    <p>{{ blogPost.body }}</p>
+{% endblock %}

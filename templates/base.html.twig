@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8" />
     <title>{% block title %}Welcome!{% endblock %}</title>
-    {% block stylesheets %}{% endblock %}
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-    <!-- Custom CSS File -->
-    <script src="css/style.css"></script>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}"/>
+    {% endblock %}
 </head>
 <body>
+{% block topbar %}
+    {% if app.user %}
+        <li><a href="{{ path('homepage') }}">Home</a></li>
+        <li><a href="{{ path("author_create") }}">Admin</a></li>
+        <li><a href="{{ logout_url("secured_area") }}">Logout</a></li>
+    {% else %}
+        <li><a href="/connect/auth0">Login</a></li>
+    {% endif %}
+{% endblock %}
 {% block body %}{% endblock %}
 {% block javascripts %}{% endblock %}
 </body>

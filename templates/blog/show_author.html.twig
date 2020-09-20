@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ author.name }}{% endblock %}
+{% block body %}
+    <h2>{{ author.name }}</h2>
+    <p>{{ author.shortBio }}</p>
+    {% if author.email %}
+        <p>{{ author.email }}</p>
+    {% endif %}
+    {% if blogPosts %}
+        <table>
+            <thead>
+            <th>Title</th>
+            <th>Category</th>
+            <th>SubTime</th>
+            </thead>
+            {% for blogPost in blogPosts %}
+                <tr>
+                    <td><a href="{{ path('show_post', {'slug': blogPost.slug}) }}">{{ blogPost.title }}</a> </td>
+                    <td>{{ blogPost.category }}</td>
+                    <td>{{ blogPost.subtime|date('F j, Y') }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>This author hasn't created any post.</p>
+    {% endif %}
+{% endblock %}

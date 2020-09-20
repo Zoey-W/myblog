@@ -1,20 +1,33 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Hello AdminController!{% endblock %}
-
+{% block title %}My Blog{% endblock %}
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/usr/local/apache2/htdocs/myblog/src/Controller/AdminController.php'|file_link(0) }}">src/Controller/AdminController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/usr/local/apache2/htdocs/myblog/templates/admin/index.html.twig'|file_link(0) }}">templates/admin/index.html.twig</a></code></li>
-    </ul>
-</div>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <a type="button" href="{{ path('admin_create_post') }}">Post a New Blog</a>
+    {% if blogPosts %}
+    <table>
+        <thead>
+            <th>Title</th>
+            <th>Category</th>
+            <th>SubTime</th>
+        </thead>
+        {% for blogPost in blogPosts %}
+            <tr>
+                <td><a href="{{ path('admin_show_post', {'slug': blogPost.slug}) }}">{{ blogPost.title }}</a> </td>
+                <td>{{ blogPost.category }}</td>
+                <td>{{ blogPost.subtime|date('F j, Y') }}</td>
+                <td><a type="button" href="{{ path('admin_edit_post', {'slug': blogPost.slug}) }}">Edit</a> </td>
+                <td><a type="button" href="{{ path('admin_delete_post', {'postId': blogPost.id}) }}">Delete</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>You haven't created a blog yet.</p>
+    {% endif %}
 {% endblock %}
+

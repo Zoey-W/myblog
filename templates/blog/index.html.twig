@@ -1,16 +1,21 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <nav class="navbar navbar-default navbar-static-top">
-        <div id="navbar" class="collapse navbar-collapse pull-right">
-            <ul class="nav navbar-nav">
-                {% if app.user %}
-                    <li><a href="{{ path("author_create") }}">Admin</a></li>
-                    <li><a href="{{ logout_url("secured_area") }}">Logout</a></li>
-                {% else %}
-                    <li class="active"><a href="/connect/auth0">Login</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
+
+    <table>
+        <thead>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Category</th>
+        <th>SubTime</th>
+        </thead>
+        {% for blogPost in blogPosts %}
+            <tr>
+                <td><a href="{{ path('show_post', {'slug': blogPost.slug}) }}">{{ blogPost.title }}</a> </td>
+                <td><a href="{{ path('show_author', {'name': blogPost.author.name}) }}">{{ blogPost.author.name }}</a> </td>
+                <td>{{ blogPost.category }}</td>
+                <td>{{ blogPost.subtime|date('F j, Y') }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
