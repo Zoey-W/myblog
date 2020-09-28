@@ -1,6 +1,12 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+    <a href="{{ path('homepage') }}">Latest Posts</a>
+    <a href="{{ path('show_category', {'category': 'news'}) }}">News</a>
+    <a href="{{ path('show_category', {'category': 'sports'}) }}">Sports</a>
+    <a href="{{ path('show_category', {'category': 'entertainment'}) }}">Entertainment</a>
+    <a href="{{ path('show_category', {'category': 'technology'}) }}">Technology</a>
+    <a href="{{ path('show_category', {'category': 'lifestyle'}) }}">Lifestyle</a>
 
     <table>
         <thead>

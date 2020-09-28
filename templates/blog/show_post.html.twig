@@ -1,7 +1,52 @@
 {% extends "base.html.twig" %}
 {% block title %}{{ blogPost.title }}{% endblock %}
 {% block body %}
-<h2>{{ blogPost.title }}</h2>
-<p><a href="{{ path('show_author', {'name': blogPost.author.name}) }}">{{ blogPost.author.name }}</a> {{ blogPost.subtime|date('F j, Y') }}</p>
-<p>{{ blogPost.body }}</p>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <h2>{{ blogPost.title }}</h2>
+    <p><a href="{{ path('show_author', {'name': blogPost.author.name}) }}">{{ blogPost.author.name }}</a> {{ blogPost.subtime|date('F j, Y') }}</p>
+    <p>{{ blogPost.body }}</p>
+    <h3>Comments</h3>
+    {% if comments %}
+    <table>
+        {% for comment in comments %}
+        <tr>
+            <td><a href="{{ path('show_author', {'name': comment.author.name}) }}">{{ comment.author.name }}</a> </td>
+            <td>{{ comment.subtime|date('F j, Y') }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="2">{{ comment.content }}</td>
+            <td></td>
+        </tr>
+            {% if replies[ comment.id ] %}
+            {% for reply in replies[ comment.id ] %}
+                <tr>
+                    <td></td>
+                    <td><a href="{{ path('show_author', {'name': reply.author.name}) }}">{{ reply.author.name }}</a> Replies to <a href="{{ path('show_author', {'name': comment.author.name}) }}">{{ comment.author.name }}</a></td>
+                    <td>{{ reply.subtime|date('F j, Y') }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="2">{{ reply.content }}</td>
+                </tr>
+            {% endfor %}
+            {% endif %}
+            <tr></tr>
+            <tr></tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No one has commented.</p>
+    {% endif %}
+    {{ form_start(form) }}
+    {{ form_widget(form.content) }}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+
 {% endblock %}

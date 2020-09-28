@@ -1,7 +1,48 @@
 {% extends "base.html.twig" %}
 {% block title %}{{ blogPost.title }}{% endblock %}
 {% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
     <h2>{{ blogPost.title }}</h2>
     <p>{{ blogPost.subtime|date('F j, Y') }}</p>
     <p>{{ blogPost.body }}</p>
+    <h3>Comments</h3>
+    {% if comments %}
+    <table>
+        {% for comment in comments %}
+            <tr>
+                <td><a href="{{ path('show_author', {'name': comment.author.name}) }}">{{ comment.author.name }}</a> </td>
+                <td>{{ comment.subtime|date('F j, Y') }}</td>
+                <td><a type="button" href="{{ path('admin_reply_com', {'comId': comment.id}) }}" target="reply">Reply</a> </td>
+                <td><a type="button" href="{{ path('admin_delete_com', {'comId': comment.id}) }}">Delete</a> </td>
+            </tr>
+            <tr>
+                <td colspan="4">{{ comment.content }}</td>
+            </tr>
+            {% if replies[ comment.id ] %}
+                {% for reply in replies[ comment.id ] %}
+                    <tr>
+                        <td></td>
+                        <td><a href="{{ path('show_author', {'name': reply.author.name}) }}">{{ reply.author.name }}</a> Replies to <a href="{{ path('show_author', {'name': comment.author.name}) }}">{{ comment.author.name }}</a></td>
+                        <td colspan="2">{{ reply.subtime|date('F j, Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="3">{{ reply.content }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            <tr></tr>
+            <tr></tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No one has commented.</p>
+    {% endif %}
+    <iframe name="reply" class="reply"></iframe>
 {% endblock %}

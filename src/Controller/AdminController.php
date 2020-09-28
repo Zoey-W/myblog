@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\BlogPost;
+use App\Entity\Reply;
 use App\Form\PostFormType;
+use App\Form\ReplyFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,12 +20,16 @@ class AdminController extends AbstractController
     private $entityManager;
     private $authorRepository;
     private $blogPostRepository;
+    private $commentRepository;
+    private $replyRepository;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
         $this->blogPostRepository = $entityManager->getRepository('App:BlogPost');
         $this->authorRepository = $entityManager->getRepository('App:Author');
+        $this->commentRepository = $entityManager->getRepository('App:Comment');
+        $this->replyRepository = $entityManager->getRepository('App:Reply');
     }
 
     /**
@@ -65,10 +72,7 @@ class AdminController extends AbstractController
     {
         $author = $this->authorRepository->findOneByUsername($this->getUser()->getUsername());
         $blogPosts = [];
-
-
         $blogPosts = $this->blogPostRepository->findByAuthor($author);
-
 
         return $this->render('admin/index.html.twig',['blogPosts' => $blogPosts]);
     }
@@ -147,13 +151,82 @@ class AdminController extends AbstractController
     public function showPostAction($slug)
     {
         $blogPost = $this->blogPostRepository->findOneBySlug($slug);
+        $comments = $this->commentRepository->findByBlogPost($blogPost);
+        $replies = [];
 
         if(!$blogPost){
             $this->addFlash('error', 'Unable to find post!');
             return $this->redirectToRoute('admin_index');
         }
+
+        foreach ( $comments as $com){
+            $reply = $this->replyRepository->findByComment($com);
+            //在twig里怎么使用
+            //$replies["".$com->getId()] = $reply;
+            //存储空间浪费
+            $replies[$com->getId()] = $reply;
+            //按顺序存储回复
+            //array_push($replies, $reply);
+        }
+
         return $this->render('admin/show_post.html.twig',[
-            'blogPost' => $blogPost
+            'blogPost' => $blogPost,
+            'comments' => $comments,
+            'replies' => $replies
         ]);
+    }
+
+    /**
+     * @Route ("/admin/reply-com/{comId}", name="admin_reply_com")
+     */
+    public function replyComAction($comId, Request $request){
+        $comment = $this->commentRepository->findOneById($comId);
+        $author = $this->authorRepository->findOneByUsername($this->getUser()->getUsername());
+
+        $reply = new Reply();
+        $reply->setComment($comment);
+        $reply->setAuthor($author);
+
+        if(!$comment || $author !== $comment->getBlogPost()->getAuthor()){
+            $this->addFlash('error', 'Unable to reply to comment!');
+            return $this->redirectToRoute('admin_index');
+        }
+
+        $form = $this->createForm(ReplyFormType::class, $reply);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()){
+            $this->entityManager->persist($reply);
+            $this->entityManager->flush();
+
+            //$this->addFlash('success', 'You made a reply.');
+            return new Response();
+        }
+
+        return $this->render('admin/reply_com.html.twig', [
+            'comment' => $comment,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route ("/admin/delete-com/{comId}", name="admin_delete_com")
+     */
+    public function deleteComAction($comId)
+    {
+        $comment = $this->commentRepository->findOneById($comId);
+        $author = $this->authorRepository->findOneByUsername($this->getUser()->getUsername());
+
+        if(!$comment || $author !== $comment->getBlogPost()->getAuthor()){
+            $this->addFlash('error', 'Unable to delete comment!');
+            return $this->redirectToRoute('admin_index');
+        }
+
+        $this->entityManager->remove($comment);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Comment was deleted!');
+
+        return $this->redirectToRoute('admin_index');
     }
 }

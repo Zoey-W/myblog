@@ -9,8 +9,8 @@
 </head>
 <body>
 {% block topbar %}
+    <li><a href="{{ path('homepage') }}">Home</a></li>
     {% if app.user %}
-        <li><a href="{{ path('homepage') }}">Home</a></li>
         <li><a href="{{ path("author_create") }}">Admin</a></li>
         <li><a href="{{ logout_url("secured_area") }}">Logout</a></li>
     {% else %}

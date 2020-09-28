@@ -1,0 +1,12 @@
+{% extends "base.html.twig" %}
+{% block title %}{% endblock %}
+{% block topbar %}{% endblock %}
+{% block body %}
+    <h4>Reply to {{ comment.author.name }}'s comment</h4>
+    <p>{{ comment.content }}</p>
+    {{ form_start(form) }}
+    {{ form_widget(form.content) }}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+
+{% endblock %}
